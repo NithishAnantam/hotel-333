@@ -1,0 +1,252 @@
+{% extends 'hotel/base.html' %}
+{% block title %}User Dashboard{% endblock %}
+
+{% block content %}
+
+<style>
+    /* 🔥 Animated Background */
+    body {
+        background: linear-gradient(45deg, #1e3c72, #2a5298, #f9d423, #ff4b5c);
+        background-size: 300% 300%;
+        animation: gradientBG 8s infinite alternate;
+        font-family: 'Poppins', sans-serif;
+        color: white;
+    }
+
+    @keyframes gradientBG {
+        0% { background-position: left; }
+        100% { background-position: right; }
+    }
+
+    /* 📌 Dashboard Layout */
+    .dashboard-container {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 20px;
+    }
+
+    /* 📌 Left Side - My Bookings */
+    .bookings-section {
+        flex: 1;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 20px;
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+    }
+
+    /* 📌 Right Side - Available Rooms */
+    .available-rooms {
+        flex: 2;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 20px;
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+    }
+
+    /* 🎨 Table Styling */
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .table th, .table td {
+        padding: 12px;
+        text-align: center;
+    }
+
+    .table th {
+        background: rgba(0, 0, 0, 0.2);
+    }
+
+    /* 🎨 Button Styling */
+    .btn {
+        padding: 10px 15px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    .btn-success {
+        background: #28a745;
+        color: white;
+    }
+
+    .btn-danger {
+        background: #dc3545;
+        color: white;
+    }
+
+    /* 📌 Modal Styling */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    
+    /* 🚀 Logout Button Styling */
+    .logout-btn {
+        position: absolute;
+        top: 20px;
+        right: 30px;
+        background: #ff4b5c;
+        color: white;
+        padding: 12px 24px;
+        border: none;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: bold;
+        text-decoration: none;
+        transition: all 0.3s ease-in-out;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .logout-btn:hover {
+        background: #d43f4b;
+        transform: scale(1.1);
+    }
+
+    .modal-content {
+        background-color: white;
+        color: black;
+        margin: 15% auto;
+        padding: 20px;
+        border-radius: 10px;
+        width: 300px;
+        text-align: center;
+    }
+
+    .close {
+        float: right;
+        font-size: 25px;
+        cursor: pointer;
+    }
+
+    input {
+        margin: 5px 0;
+        padding: 5px;
+        width: 100%;
+    }
+
+    button {
+        margin-top: 10px;
+        padding: 10px;
+        background-color: green;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+</style>
+
+<!-- ✅ Logout Button -->
+<a href="{% url 'logout' %}" class="logout-btn">Logout</a>
+<!-- ✅ Welcome Message -->
+<div class="welcome-text">
+    👋 Welcome <span style="color: #f9d423;">{{ user.username }}</span> 🎉
+</div>
+
+<!-- ✅ Dashboard Content -->
+<div class="dashboard-container">
+    <!-- 📌 My Bookings (Left Side) -->
+    <div class="bookings-section">
+        <h3>📅 My Bookings</h3>
+        {% for booking in bookings %}
+        <div class="booking-item">
+            <span>🏨 {{ booking.1 }} - 🏠 {{ booking.2 }}</span>
+            <a href="{% url 'cancel_booking' booking.1 booking.2 %}" class="btn btn-danger">Cancel</a>
+        </div>
+        {% empty %}
+        <p>No bookings yet.</p>
+        {% endfor %}
+    </div>
+
+    <!-- 📌 Available Rooms (Right Side) -->
+    <div class="available-rooms">
+        <h3>🏨 Available Rooms</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Hotel</th>
+                    <th>Room Type</th>
+                    <th>Price</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for room in rooms %}
+                <tr>
+                    <td>{{ room.0 }}</td>
+                    <td>{{ room.1 }}</td>
+                    <td>${{ room.2 }}</td>
+                    <td>
+                        <a href="{% url 'book_room' room.0 room.1 %}" class="btn btn-success book-btn">Book</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- 📌 Booking Modal -->
+<div id="bookingModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Confirm Your Booking</h2>
+        <label>Check-in Date:</label>
+        <input type="date" id="checkInDate"><br>
+        <label>Check-out Date:</label>
+        <input type="date" id="checkOutDate"><br>
+        <label>Total People:</label>
+        <input type="number" id="totalPeople" min="1" value="1"><br>
+        <label>Total Rooms:</label>
+        <input type="number" id="totalRooms" min="1" value="1"><br>
+        <button id="confirmBooking">Confirm</button>
+    </div>
+</div>
+
+<!-- ✅ JavaScript Code -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let modal = document.getElementById("bookingModal");
+        let closeBtn = document.querySelector(".close");
+        let confirmBtn = document.getElementById("confirmBooking");
+        let bookButtons = document.querySelectorAll(".book-btn");
+
+        let selectedURL = "";
+
+        // Book button click → Open Modal
+        bookButtons.forEach(button => {
+            button.addEventListener("click", function (event) {
+                event.preventDefault();
+                selectedURL = this.getAttribute("href"); // Store URL
+                modal.style.display = "block";
+            });
+        });
+
+        // Close Modal
+        closeBtn.onclick = function () {
+            modal.style.display = "none";
+        };
+
+        // Confirm Button Click → Redirect to Booking URL
+        confirmBtn.onclick = function () {
+            window.location.href = selectedURL;
+        };
+
+        // Close Modal on Outside Click
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        };
+    });
+</script>
+
+{% endblock %}

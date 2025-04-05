@@ -1,0 +1,9 @@
+username,email,password,role
+admin,admin@example.com,admin123,admin
+user1,user1@example.com,user123,user
+as,as@gmail.com,123,user
+testing1@gmail.com,test@gmail.com,123,user
+qwer,qwer@gmail.com,1234,user
+rr,rr@gmail.com,123,user
+asd,asd@gmail.com,123,user
+nithish,nithishanantam@gmail.com,Sai@1234,user

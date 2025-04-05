@@ -1,0 +1,226 @@
+{% extends 'hotel/base.html' %}
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+
+<style>
+    /* Animated Background */
+    body {
+        background: linear-gradient(-45deg, #ff9a9e, #fad0c4, #ffdde1, #ff7675);
+        background-size: 400% 400%;
+        animation: gradientBG 8s ease infinite;
+        font-family: 'Poppins', sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+
+    @keyframes gradientBG {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    /* Header */
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 15px 20px;
+        border-bottom: 2px solid #ff7675;
+        position: fixed;
+        width: 100%;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+    }
+
+    .header h2 {
+        margin: 0;
+    }
+
+    .logout-btn {
+        background: #ff4757;
+        color: white;
+        padding: 8px 15px;
+        border: none;
+        border-radius: 5px;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    .logout-btn:hover {
+        background: #c0392b;
+    }
+
+    /* Main layout */
+    .container {
+        display: flex;
+        gap: 20px;
+        padding: 100px 20px 20px; /* Added top padding to prevent overlap */
+    }
+
+    /* Sidebar for Forms */
+    .sidebar {
+        width: 30%;
+        position: fixed;
+        left: 20px;
+        top: 80px; /* Adjusted to stay below header */
+        background: rgba(255, 255, 255, 0.8);
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .sidebar h3 {
+        text-align: center;
+    }
+
+    /* Tables Section */
+    .content {
+        margin-left: 35%;
+        width: 60%;
+    }
+
+    .table-container {
+        background: rgba(255, 255, 255, 0.9);
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+    }
+
+    .table {
+        width: 100%;
+        background: white;
+        border-radius: 10px;
+    }
+
+    th, td {
+        padding: 12px;
+        text-align: center;
+    }
+
+    /* Button Styling */
+    .btn-primary {
+        background-color: #ff7675;
+        border-color: #ff7675;
+        transition: 0.3s;
+    }
+
+    .btn-primary:hover {
+        background-color: #d63031;
+    }
+
+    .btn-danger {
+        background-color: #ff4757;
+        transition: 0.3s;
+    }
+
+    .btn-danger:hover {
+        background-color: #c0392b;
+    }
+
+</style>
+
+<!-- Header -->
+<div class="header">
+    <h2>Hotel Management</h2>
+    <a href="{% url 'logout' %}" class="logout-btn">Logout</a>
+</div>
+
+<div class="container">
+    <!-- Sidebar for Forms -->
+    <div class="sidebar">
+        <!-- Add Hotel -->
+        <h3>Add Hotel</h3>
+        <form method="post" action="{% url 'add_hotel' %}">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="name">Hotel Name</label>
+                <input type="text" class="form-control" name="name" required>
+            </div>
+            <div class="mb-3">
+                <label for="location">Location</label>
+                <input type="text" class="form-control" name="location" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Add Hotel</button>
+        </form>
+
+        <!-- Add Room -->
+        <h3>Add Room</h3>
+        <form method="post" action="{% url 'add_room' %}">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="hotel_name">Hotel Name</label>
+                <input type="text" class="form-control" name="hotel_name" required>
+            </div>
+            <div class="mb-3">
+                <label for="room_type">Room Type</label>
+                <input type="text" class="form-control" name="room_type" required>
+            </div>
+            <div class="mb-3">
+                <label for="price">Price</label>
+                <input type="number" class="form-control" name="price" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Add Room</button>
+        </form>
+    </div>
+
+    <!-- Tables Section -->
+    <div class="content">
+        <!-- Hotels List -->
+        <div class="table-container">
+            <h3>Hotels</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Location</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for hotel in hotels %}
+                    <tr>
+                        <td>{{ hotel.0 }}</td>
+                        <td>{{ hotel.1 }}</td>
+                        <td>
+                            <a href="{% url 'delete_hotel' hotel.0 %}" class="btn btn-danger">Delete</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Rooms List -->
+        <div class="table-container">
+            <h3>Rooms</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Hotel</th>
+                        <th>Room Type</th>
+                        <th>Price</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for room in rooms %}
+                    <tr>
+                        <td>{{ room.0 }}</td>
+                        <td>{{ room.1 }}</td>
+                        <td>${{ room.2 }}</td>
+                        <td>
+                            <a href="{% url 'delete_room' room.0 room.1 %}" class="btn btn-danger">Delete</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

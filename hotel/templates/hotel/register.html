@@ -1,0 +1,145 @@
+{% extends 'hotel/base.html' %}
+{% block title %}Register{% endblock %}
+
+{% block content %}
+
+<style>
+    /* Background Animation */
+    body {
+        font-family: 'Poppins', sans-serif;
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(135deg, #ff6a00, #ee0979);
+        animation: backgroundAnimation 8s infinite alternate;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    @keyframes backgroundAnimation {
+        0% { background: linear-gradient(135deg, #ff6a00, #ee0979); }
+        50% { background: linear-gradient(135deg, #1e3c72, #2a5298); }
+        100% { background: linear-gradient(135deg, #ff6a00, #ee0979); }
+    }
+
+    /* Register Form Container */
+    .register-container {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        text-align: center;
+        width: 350px;
+        animation: fadeIn 1.5s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Heading */
+    .register-container h2 {
+        color: white;
+        margin-bottom: 20px;
+        font-size: 26px;
+    }
+
+    /* Input Fields */
+    .input-group {
+        margin-bottom: 15px;
+        text-align: left;
+    }
+
+    .input-group label {
+        font-size: 14px;
+        color: white;
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .input-group input {
+        width: 100%;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .input-group input:focus {
+        outline: none;
+        background: rgba(255, 255, 255, 0.3);
+        transform: scale(1.05);
+    }
+
+    /* Register Button */
+    .btn-register {
+        width: 100%;
+        padding: 12px;
+        background: #4CAF50;
+        border: none;
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .btn-register:hover {
+        background: #45a049;
+        transform: scale(1.05);
+    }
+
+    /* Login Button */
+    .login-link {
+        margin-top: 10px;
+        display: block;
+        color: #f9d423;
+        font-size: 14px;
+        text-decoration: none;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .login-link:hover {
+        color: #ffeb3b;
+        text-decoration: underline;
+        transform: scale(1.05);
+    }
+
+</style>
+
+<!-- ✅ Register Form -->
+<div class="register-container">
+    <h2>Register</h2>
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="input-group">
+            <label for="username">Username</label>
+            <input type="text" name="username" required>
+        </div>
+
+        <div class="input-group">
+            <label for="email">Email</label>
+            <input type="email" name="email" required>
+        </div>
+
+        <div class="input-group">
+            <label for="password">Password</label>
+            <input type="password" name="password" required>
+        </div>
+
+        <button type="submit" class="btn-register">Register</button>
+
+        <!-- ✅ Login Link -->
+        <a href="{% url 'login' %}" class="login-link">Already have an account? Login here</a>
+    </form>
+</div>
+
+{% endblock %}

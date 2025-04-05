@@ -1,0 +1,28 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.9
+    commands:
+      - pip install --upgrade pip
+      - pip install -r requirements.txt
+
+  build:
+    commands:
+      - python manage.py collectstatic --noinput
+      - python manage.py migrate
+
+  post_build:
+    commands:
+      - echo "Zipping application files..."
+      - zip -r application.zip . -x "*.git*"
+
+artifacts:
+  files:
+    - application.zip
+    - Procfile
+    - requirements.txt
+    - runtime.txt
+    - .ebextensions/**  # Include EB config if present
+
