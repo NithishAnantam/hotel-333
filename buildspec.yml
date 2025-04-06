@@ -13,7 +13,7 @@ version: 0.2
       commands:
         - python manage.py collectstatic --noinput
         - python manage.py migrate
-        - pylint nithish-hotel-main/ --output-format=text > pylint_report.txt  # Optional: Run Pylint
+        - pylint hotel/ --output-format=text > pylint_report.txt  # Optional: Run Pylint
  
     post_build:
       commands:
