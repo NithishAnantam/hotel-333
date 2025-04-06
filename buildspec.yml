@@ -13,14 +13,9 @@ phases:
       - python manage.py collectstatic --noinput
       - python manage.py migrate
  
-  post_build:
-    commands:
-      - echo "Zipping application files..."
-      - zip -r application.zip . -x "*.git*"
  
 artifacts:
   files:
-    - application.zip
     - Procfile
     - requirements.txt
     - runtime.txt
