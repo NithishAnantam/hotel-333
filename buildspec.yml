@@ -1,37 +1,30 @@
 version: 0.2
-
-phases:
-  install:
-    runtime-versions:
-      python: 3.9
-    commands:
-      - pip install --upgrade pip
-      - pip install -r requirements.txt
-      - pip install pylint
-
-  pre_build:
-    commands:
-      - echo "Running Pylint analysis"
-      - pylint your_django_app/ --exit-zero > pylint_report.txt
-
-  build:
-    commands:
-      - python manage.py collectstatic --noinput
-      - python manage.py migrate
-      - echo "Build stage (can run tests or prepare deployment)"
-
-  post_build:
-    commands:
-      - echo "Zipping application files..."
-      - zip -r application.zip . -x "*.git*"
-      - echo "Build completed on `date`"
-
-artifacts:
-  files:
-    - application.zip
-    - Procfile
-    - requirements.txt
-    - runtime.txt
-    - pylint_report.txt
-    - .ebextensions/**  # Include EB config if present
-
+ 
+  phases:
+    install:
+      runtime-versions:
+        python: 3.9
+      commands:
+        - pip install --upgrade pip
+        - pip install -r requirements.txt
+        - pip install pylint  # Optional: Install Pylint for code analysis
+ 
+    build:
+      commands:
+        - python manage.py collectstatic --noinput
+        - python manage.py migrate
+        - pylint nithish-hotel-main/ --output-format=text > pylint_report.txt  # Optional: Run Pylint
+ 
+    post_build:
+      commands:
+        - echo "Zipping application files..."
+        - zip -r application.zip . -x "*.git*"
+ 
+  artifacts:
+    files:
+      - application.zip
+      - Procfile
+      - requirements.txt
+      - runtime.txt
+      - .ebextensions/**  # Include EB config if present
+      - pylint_report.txt  # Optional: Include Pylint report
